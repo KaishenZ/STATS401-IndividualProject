@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visualization Critique and Redesign · Kaishen Zhang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <p class="course">STATS 401 · Individual Project · Kaishen Zhang</p>
+      <nav aria-label="Project sections">
+        <a href="#top">Visualization Critique and Redesign</a>
+        <a href="#original">Original</a>
+        <a href="#redesign">Redesign</a>
+        <a href="#report">Report</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="top">
+    <h1>Visualization Critique and Redesign</h1>
+    <p class="dek">A critique of Our World in Data’s stacked area chart of annual CO₂ emissions by world region, and a D3.js redesign that makes each region’s trajectory readable.</p>
+
+    <section id="original">
+      <h2>Original visualization</h2>
+      <div class="card intro">
+        <p><strong>Annual CO₂ emissions by world region.</strong> Published by <a href="https://ourworldindata.org/grapher/annual-co-emissions-by-region">Our World in Data</a>. The chart is a stacked area of annual carbon dioxide emissions from 1750 to 2024. Fossil fuels and industry are included; land-use change is not. International aviation and shipping are separate series, because they are not included in any country’s emissions.</p>
+        <p>The data are annual totals in tonnes. This page loads the chart’s CSV and keeps the twelve regions drawn in the original. Those regions do not overlap, and in 2024 they sum to the world total of 38.6 billion tonnes. The underlying inventory is the Global Carbon Budget (2025), processed by Our World in Data.</p>
+        <figure>
+          <img src="images/original-co2-by-region.png" alt="Stacked area chart of annual CO₂ emissions by world region from 1750 to 2024. China, Asia, the United States, India, Europe, and smaller regions are stacked to a total near 40 billion tonnes.">
+          <figcaption>Figure 1. Original chart, “Annual CO₂ emissions by world region,” Our World in Data. Data: Global Carbon Budget (2025). Chart image © Our World in Data, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://ourworldindata.org/grapher/annual-co-emissions-by-region">Open the interactive original.</a></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="redesign">
+      <h2>Redesigned visualization</h2>
+      <div class="card" id="redesign-live">
+        <p class="insight" id="insight">Loading the emissions data…</p>
+        <div class="controls">
+          <fieldset>
+            <legend>Time range</legend>
+            <div class="segment">
+              <button type="button" data-range="1950" aria-pressed="true">1950–2024</button>
+              <button type="button" data-range="1750" aria-pressed="false">1750–2024</button>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>What to compare</legend>
+            <div class="segment">
+              <button type="button" data-mode="shared" aria-pressed="true">Compare levels</button>
+              <button type="button" data-mode="own" aria-pressed="false">Inspect each shape</button>
+              <button type="button" data-mode="index" aria-pressed="false">Compare change since 1990</button>
+            </div>
+          </fieldset>
+        </div>
+        <p class="mode-banner" id="mode-banner"></p>
+        <p class="readout" id="readout" aria-live="polite">Move across a chart to choose a year. The year stays in place when you scroll.</p>
+        <div id="viz-charts">
+          <h3 class="chart-title">World total</h3>
+          <p class="chart-help">Sum of the twelve regions, in billion tonnes. Play grows every chart up to the selected year. Click or drag on this chart to hold a year.</p>
+          <div class="year-control">
+            <button type="button" id="play-btn" aria-pressed="false">Play</button>
+            <label for="year-slider">Year</label>
+            <input id="year-slider" type="range" min="1950" max="2024" value="2024" aria-valuemin="1950" aria-valuemax="2024" aria-valuenow="2024">
+            <strong id="year-readout">2024</strong>
+          </div>
+          <div id="total"></div>
+          <h3 class="chart-title">Each region on its own baseline</h3>
+          <p class="axis-note" id="axis-note"></p>
+          <div id="multiples"></div>
+          <h3 class="chart-title" id="bar-title">Where the 2024 total comes from</h3>
+          <p class="chart-help" id="bar-help">Bar length is that year’s emissions. The horizontal scale stays fixed, so the bars grow when you play forward. Drag the year here or on the control above.</p>
+          <div class="year-control">
+            <label for="year-slider-bars">Year for this ranking</label>
+            <input id="year-slider-bars" type="range" min="1950" max="2024" value="2024" aria-valuemin="1950" aria-valuemax="2024" aria-valuenow="2024">
+            <strong id="year-readout-bars">2024</strong>
+          </div>
+          <div id="bars"></div>
+        </div>
+        <p class="scale-note" id="scale-note"></p>
+        <p class="source-note">Data file: <code>data/annual-co-emissions-by-region.csv</code>, the Our World in Data chart download. Column <code>emissions_total</code> is tonnes of CO₂. The page divides by one billion for display and filters to the twelve regions in the original graphic, plus the World series used as a check on the total. Source: Global Carbon Budget (2025); Friedlingstein et al. (2026), with processing by Our World in Data. <a href="https://ourworldindata.org/grapher/annual-co-emissions-by-region.csv">CSV</a> · <a href="https://ourworldindata.org/grapher/annual-co-emissions-by-region">Chart</a> · <a href="https://doi.org/10.5194/essd-18-3211-2026">Global Carbon Budget 2025</a>.</p>
+      </div>
+    </section>
+
+    <section id="report">
+      <p class="report-label">Visualization Critique and Redesign Report</p>
+      <div class="prose">
+        <h2>Report</h2>
+        <p>The original graphic is Our World in Data’s “Annual CO₂ emissions by world region,” a stacked area chart spanning 1750–2024. It shows annual carbon dioxide from fossil fuels and industry, in tonnes, and leaves out land-use change. International aviation and shipping appear as separate series because they are not included in national totals. The twelve regions are a partition: in the downloaded data they sum to the world total, 38.6 billion tonnes in 2024. The intended readers are the general audience of an explanatory site, including students, journalists, and interested non-specialists. The message is that global fossil emissions have grown sharply since the mid-twentieth century and that the regional composition has shifted, with China now the largest single contributor. A viewer should be able to read the growth of the total, compare regional contributions, and tell whether a particular region is rising or falling.</p>
+        <p>Two design choices support that reading. The subtitle states the accounting boundary, and the chart cites the Global Carbon Budget, so the quantity on the vertical axis is defined before it is interpreted. Labels sit at the right edge in the same color as each band, which avoids a detached legend. The stack is also a reasonable encoding for the total. Because the regions do not overlap, the upper contour is world emissions rather than an arbitrary sum.</p>
+        <p>The same encoding is a poor fit for comparing regions over time. In a stacked area only the bottom band has a fixed baseline. Here that band is Europe excluding the EU-27. Every series above it is read from a moving edge. Aligned position is a more accurate channel for this comparison than a slope sitting on another slope (Cleveland and McGill, 1984). EU-27 emissions fell from 3.87 billion tonnes in 1990 to 2.43 billion in 2024, a 37 percent decline, and Europe outside the EU-27 fell 41 percent. Those declines are hard to see in the stack. The time axis adds a second problem. Relative to today’s total, emissions from 1750 to about 1950 lie near zero, so most of the horizontal axis shows little change and the modern rise is squeezed to the right. Third, the smallest series are effectively unreadable. In 2024 Oceania, international aviation, and international shipping are each under 2 percent of the total. Their bands are only a few pixels tall, and their labels collide at the right edge.</p>
+        <p>The redesign uses the same twelve series and asks each view to do one job. Small-multiple line charts, ordered by 2024 emissions, put every region on a zero baseline and a shared vertical scale. A common baseline makes level comparisons legitimate, so China’s rise and the turning points in the United States and the EU can be read directly. A separate world-total line keeps the task the stack handled well: the total grew from 5.9 billion tonnes in 1950 to 38.6 billion in 2024, about 6.5 times as high. The default window is 1950–2024. A control restores 1750–2024 rather than forcing the long axis on every reading. Composition moves to a ranked bar chart for a chosen year, opening on 2024, with aligned lengths and labeled shares. The bars remain in tonnes if the lines are indexed, so shares are not confused with growth rates. Play advances the lines and the bars one year at a time on a fixed scale, so growth is visible without the stack. A slider or a click pins one year on the total, the panels, and the bars. The marker stays after scrolling, and the year is shown in a dark readout, because a thin hover line was easy to miss. “Inspect each shape” gives each panel its own scale, so a thin series has a readable slope. “Compare change since 1990” indexes every series to 100 in 1990. India is then about 5.5 times its 1990 level, and the EU is well below 100. Each mode labels its scale, because those buttons do not change the world-total line.</p>
+        <p>The redesign makes three tasks easier: comparing levels, seeing who has declined since 1990, and ranking a chosen year’s shares. The cost is that composition and the total are no longer one silhouette. The index view can also flatten a within-region reversal. United States emissions were only about 4 percent lower in 2024 than in 1990, but they peaked in 2005 and have since fallen by about 20 percent. That peak is visible on the level scale and during playback, and easy to underestimate on the index. The redesign also does not show emissions per person. China’s 31.8 percent of tonnes is not a per-person share. Answering that question would require population data and a different claim from the one this chart was built to make.</p>
+      </div>
+      <figure>
+        <img src="images/original-co2-by-region.png" alt="Original Our World in Data stacked area chart of CO₂ emissions by world region.">
+        <figcaption>Figure 1, repeated in the report. Original stacked area chart from Our World in Data.</figcaption>
+      </figure>
+      <figure>
+        <img src="images/redesign-screenshot.png" alt="Redesigned small-multiple line charts of regional CO₂ emissions from 1950 to 2024, with a world total and a ranked bar chart of 2024 emissions.">
+        <figcaption>Figure 2. Redesign in its default view: 1950–2024, shared scale, world total, and the 2024 ranking.</figcaption>
+      </figure>
+      <h2>References</h2>
+      <ol class="refs">
+        <li>Our World in Data. (n.d.). <em>Annual CO₂ emissions by world region.</em> <a href="https://ourworldindata.org/grapher/annual-co-emissions-by-region">https://ourworldindata.org/grapher/annual-co-emissions-by-region</a></li>
+        <li>Friedlingstein, P., et al. (2026). Global Carbon Budget 2025. <em>Earth System Science Data, 18</em>, 3211–3288. <a href="https://doi.org/10.5194/essd-18-3211-2026">https://doi.org/10.5194/essd-18-3211-2026</a></li>
+        <li>Cleveland, W. S., &amp; McGill, R. (1984). Graphical perception: Theory, experimentation, and application to the development of graphical methods. <em>Journal of the American Statistical Association, 79</em>(387), 531–554.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">Kaishen Zhang · STATS 401 individual project · Visualization Critique and Redesign</div>
+  </footer>
+  <script src="js/d3.min.js"></script>
+  <script src="js/redesign.js"></script>
+</body>
+</html>
